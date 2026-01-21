@@ -9,7 +9,7 @@ import { INITIAL_KNOWLEDGE, MOCK_EMAILS } from './constants.tsx';
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inbox' | 'knowledge'>('inbox');
   const [knowledge, setKnowledge] = useState<KnowledgeItem[]>(INITIAL_KNOWLEDGE);
-  const [emails] = useState<EmailMessage[]>(MOCK_EMAILS);
+  const [emails, setEmails] = useState<EmailMessage[]>(MOCK_EMAILS);
 
   const handleAddKnowledge = (item: Omit<KnowledgeItem, 'id' | 'updatedAt'>) => {
     const newItem: KnowledgeItem = {
@@ -24,10 +24,23 @@ const App: React.FC = () => {
     setKnowledge(knowledge.filter(k => k.id !== id));
   };
 
+  const handleAddEmail = (email: Omit<EmailMessage, 'id' | 'receivedAt'>) => {
+    const newEmail: EmailMessage = {
+      ...email,
+      id: `m-${Date.now()}`,
+      receivedAt: new Date().toISOString()
+    };
+    setEmails([newEmail, ...emails]);
+  };
+
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
       {activeTab === 'inbox' ? (
-        <InboxSection emails={emails} knowledge={knowledge} />
+        <InboxSection 
+          emails={emails} 
+          knowledge={knowledge} 
+          onReceiveEmail={handleAddEmail}
+        />
       ) : (
         <KnowledgeSection 
           items={knowledge} 

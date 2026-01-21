@@ -2,17 +2,21 @@
 import React, { useState } from 'react';
 import { EmailMessage, EmailDraft, KnowledgeItem, ProcessingState } from '../types.ts';
 import { generateEmailResponse } from '../services/geminiService.ts';
-import { Send, Sparkles, RefreshCw, AlertCircle, CheckCircle2, User, MailCheck } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, AlertCircle, CheckCircle2, User, MailCheck, Plus, X } from 'lucide-react';
 
 interface InboxSectionProps {
   emails: EmailMessage[];
   knowledge: KnowledgeItem[];
+  onReceiveEmail: (email: Omit<EmailMessage, 'id' | 'receivedAt'>) => void;
 }
 
-const InboxSection: React.FC<InboxSectionProps> = ({ emails, knowledge }) => {
+const InboxSection: React.FC<InboxSectionProps> = ({ emails, knowledge, onReceiveEmail }) => {
   const [selectedEmail, setSelectedEmail] = useState<EmailMessage | null>(null);
   const [draft, setDraft] = useState<EmailDraft | null>(null);
   const [tone, setTone] = useState<'professional' | 'friendly' | 'concise'>('professional');
+  const [isAddingEmail, setIsAddingEmail] = useState(false);
+  const [newEmailForm, setNewEmailForm] = useState({ sender: '', subject: '', body: '' });
+  
   const [processing, setProcessing] = useState<ProcessingState>({
     isRetrieving: false,
     isDrafting: false,
@@ -38,26 +42,83 @@ const InboxSection: React.FC<InboxSectionProps> = ({ emails, knowledge }) => {
     }
   };
 
+  const handleCreateEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newEmailForm.sender && newEmailForm.subject && newEmailForm.body) {
+      onReceiveEmail(newEmailForm);
+      setNewEmailForm({ sender: '', subject: '', body: '' });
+      setIsAddingEmail(false);
+    }
+  };
+
   return (
     <div className="flex h-full">
       {/* Email List */}
-      <div className="w-1/3 border-r border-slate-200 bg-white">
-        <div className="p-6 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-800">Inbox</h2>
-          <p className="text-sm text-slate-500">{emails.length} Pending replies</p>
+      <div className="w-1/3 border-r border-slate-200 bg-white flex flex-col">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">Inbox</h2>
+            <p className="text-sm text-slate-500">{emails.length} Messages</p>
+          </div>
+          <button 
+            onClick={() => setIsAddingEmail(!isAddingEmail)}
+            className="p-2 hover:bg-slate-100 rounded-lg text-blue-600 transition-colors"
+            title="Simulate Received Email"
+          >
+            {isAddingEmail ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          </button>
         </div>
-        <div className="divide-y divide-slate-100">
+
+        <div className="flex-1 overflow-auto divide-y divide-slate-100">
+          {isAddingEmail && (
+            <div className="p-4 bg-blue-50 border-b border-blue-100 animate-in slide-in-from-top-2">
+              <form onSubmit={handleCreateEmail} className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Sender Email"
+                  required
+                  value={newEmailForm.sender}
+                  onChange={e => setNewEmailForm({...newEmailForm, sender: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Subject"
+                  required
+                  value={newEmailForm.subject}
+                  onChange={e => setNewEmailForm({...newEmailForm, subject: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+                <textarea
+                  placeholder="Email Message Body..."
+                  required
+                  value={newEmailForm.body}
+                  onChange={e => setNewEmailForm({...newEmailForm, body: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-blue-200 rounded-lg h-24 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                />
+                <button 
+                  type="submit"
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm"
+                >
+                  Simulate Receiving
+                </button>
+              </form>
+            </div>
+          )}
+
           {emails.map((email) => (
             <button
               key={email.id}
-              onClick={() => { setSelectedEmail(email); setDraft(null); }}
+              onClick={() => { setSelectedEmail(email); setDraft(null); setIsAddingEmail(false); }}
               className={`w-full text-left p-6 hover:bg-slate-50 transition-colors ${
                 selectedEmail?.id === email.id ? 'bg-blue-50 border-l-4 border-blue-600' : ''
               }`}
             >
               <div className="flex justify-between items-center mb-1">
                 <span className="font-bold text-slate-800 truncate">{email.sender}</span>
-                <span className="text-[10px] text-slate-400 shrink-0">1h ago</span>
+                <span className="text-[10px] text-slate-400 shrink-0">
+                  {new Date(email.receivedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
               </div>
               <p className="text-sm font-medium text-slate-700 mb-1 truncate">{email.subject}</p>
               <p className="text-xs text-slate-500 line-clamp-2">{email.body}</p>
