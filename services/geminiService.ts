@@ -8,7 +8,7 @@ export const generateEmailResponse = async (
   tone: string
 ): Promise<EmailDraft> => {
   // Re-initialize AI to ensure it uses latest env variables
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || 'AIzaSyClez5HKOvIKfVW0n_U8mjgdIHJFl3aD18' });
 
   // We use the full KB for this PoC since Gemini 3 Flash has a massive context window
   const context = knowledgeBase
