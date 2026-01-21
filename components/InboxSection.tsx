@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { EmailMessage, EmailDraft, KnowledgeItem, ProcessingState } from '../types';
-import { generateEmailResponse } from '../services/geminiService';
+import { EmailMessage, EmailDraft, KnowledgeItem, ProcessingState } from '../types.ts';
+import { generateEmailResponse } from '../services/geminiService.ts';
 import { Send, Sparkles, RefreshCw, AlertCircle, CheckCircle2, User, MailCheck } from 'lucide-react';
 
 interface InboxSectionProps {
@@ -31,6 +31,7 @@ const InboxSection: React.FC<InboxSectionProps> = ({ emails, knowledge }) => {
       );
       setDraft(result);
     } catch (err) {
+      console.error(err);
       setProcessing({ ...processing, isDrafting: false, error: 'Failed to generate draft. Please try again.' });
     } finally {
       setProcessing(p => ({ ...p, isDrafting: false }));
@@ -43,7 +44,7 @@ const InboxSection: React.FC<InboxSectionProps> = ({ emails, knowledge }) => {
       <div className="w-1/3 border-r border-slate-200 bg-white">
         <div className="p-6 border-b border-slate-100">
           <h2 className="text-lg font-bold text-slate-800">Inbox</h2>
-          <p className="text-sm text-slate-500">2 Pending replies</p>
+          <p className="text-sm text-slate-500">{emails.length} Pending replies</p>
         </div>
         <div className="divide-y divide-slate-100">
           {emails.map((email) => (

@@ -1,5 +1,5 @@
 
-import { KnowledgeItem, EmailMessage } from './types';
+import { KnowledgeItem, EmailMessage } from './types.ts';
 
 export const INITIAL_KNOWLEDGE: KnowledgeItem[] = [
   {

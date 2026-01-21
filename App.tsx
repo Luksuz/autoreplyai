@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
-import Layout from './components/Layout';
-import InboxSection from './components/InboxSection';
-import KnowledgeSection from './components/KnowledgeSection';
-import { KnowledgeItem, EmailMessage } from './types';
-import { INITIAL_KNOWLEDGE, MOCK_EMAILS } from './constants';
+import Layout from './components/Layout.tsx';
+import InboxSection from './components/InboxSection.tsx';
+import KnowledgeSection from './components/KnowledgeSection.tsx';
+import { KnowledgeItem, EmailMessage } from './types.ts';
+import { INITIAL_KNOWLEDGE, MOCK_EMAILS } from './constants.tsx';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inbox' | 'knowledge'>('inbox');

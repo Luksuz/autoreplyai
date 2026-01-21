@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { KnowledgeItem } from '../types';
-import { Plus, Search, Trash2, FileText, Globe, Shield } from 'lucide-react';
+import { KnowledgeItem } from '../types.ts';
+import { Plus, Trash2, FileText, Globe, Shield } from 'lucide-react';
 
 interface KnowledgeSectionProps {
   items: KnowledgeItem[];
