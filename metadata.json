@@ -1,0 +1,5 @@
+{
+  "name": "AutoReply AI - Smart Email PoC",
+  "description": "An enterprise-grade email responder PoC using RAG to fetch company knowledge and draft context-aware email replies.",
+  "requestFramePermissions": []
+}
